@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Converted Line Drawing</title>
+    <style>
+        body {
+            text-align: center;
+            background-image: url('Background 1.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        img {
+            width: 320px;
+            height: 240px;
+            margin: 20px;
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Converted Line Drawing</h1>
+    <img id="originalImage" alt="Original Image" />
+    <img id="lineDrawImage" alt="Line Drawing Image" style="display: none;" />
+    <button id="convertButton">Convert to Line Drawing</button>
+    <button id="backButton">Go Back</button>
+    <button id="plotButton">Plot</button> <!-- New Plot Button -->
+
+    <script>
+        // Retrieve the captured image from local storage
+        const originalImage = document.getElementById('originalImage');
+        const lineDrawImage = document.getElementById('lineDrawImage');
+        const convertButton = document.getElementById('convertButton');
+        const backButton = document.getElementById('backButton');
+        const plotButton = document.getElementById('plotButton'); // New button reference
+
+        const imageDataUrl = localStorage.getItem('capturedImage');
+        if (imageDataUrl) {
+            originalImage.src = imageDataUrl;
+        } else {
+            alert('No image found! Redirecting to the capture page.');
+            window.location.href = 'index.html'; // Redirect if no image is stored
+        }
+
+        // Convert the image to a line drawing
+        convertButton.addEventListener('click', () => {
+            fetch('/convert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ image: imageDataUrl })
+            })
+            .then(response => response.json())
+            .then(data => {
+                lineDrawImage.src = data.linedraw;
+                lineDrawImage.style.display = 'block';
+                convertButton.disabled = true; // Disable button after conversion
+            })
+            .catch(error => {
+                console.error('Error converting image:', error);
+            });
+        });
+
+        // Go back to the capture page
+        backButton.addEventListener('click', () => {
+            window.location.href = './index.html'; // Redirect to the main page
+        });
+
+        // Placeholder functionality for the Plot button
+        plotButton.addEventListener('click', () => {
+            alert('Plot functionality not implemented yet!');
+            // Implement your plot functionality here, such as displaying a graph
+        });
+    </script>
+</body>
+</html>
